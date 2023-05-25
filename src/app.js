@@ -45,17 +45,40 @@ connection.connect((err) => {
 });
 
 // Define routes
-app.get("/", middleware.isAuthenticated, async (req, res) => {
-  const result = await connection.query("SELECT * FROM users");
+app.get("/", async (req, res) => {
+  const result = await connection.query("SELECT * FROM posts");
   res.render("index", {
-    users: result.rows,
+    posts: result.rows,
     session: req.session,
     title: "index",
   });
 });
+
 app.get("/login", async (req, res) => {
   res.render("login", { title: "login", session: req.session });
 });
+
+app.get("/create-post", async (req, res) => {
+  res.render("create-post", {
+    session: req.session,
+    title: "create-post",
+  });
+});
+
+app.post("/create-post", async (req, res) => {
+  console.log(req.body)
+  const user_id = 1;
+  const title = req.body.title
+  const description = req.body.editor1
+  const result = await connection.query("INSERT INTO posts (user_id, title, description) VALUES ($1, $2, $3) RETURNING *", [user_id, title, description,])
+  .catch(err => console.log(err))
+  res.render("create-post", {
+    session: req.session,
+    title: "create-post",
+  });
+});
+
+
 
 // Start the server
 app.listen(3000, () => {

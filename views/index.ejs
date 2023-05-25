@@ -1,6 +1,16 @@
-<ul>
-  <% for (let i = 0; i < users.length; i++) { %>
-  <li><%= users[i].name %></li>
-  <li><%= users[i].email %></li>
-  <% } %>
-</ul>
+<html>
+  <body>
+    <%- include('header.ejs') %>
+    <div class="container mt-5">
+      <h1 class="mt-5 text-center"> All Post</h1>
+        <% for (let i = 0; i < posts.length; i++) { %>
+          <div class="card mt-5">
+            <h5 class="card-header"><%= posts[i].title %></h5>
+            <div class="card-body">
+                <%- posts[i].description %>
+            </div>
+          </div>
+          <% } %>
+    </div>
+  </body>
+</html>

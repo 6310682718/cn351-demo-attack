@@ -11,13 +11,15 @@
 
 ### Running Project step
 1. install nodejs
-2. use command `npm install -g yarn`
-3. use command `yarn`
-4. use command `yarn dev`
-5. use command `npx prisma migrate dev`
-6. use command `npx prisma generate`
-7. start docker deamon
-8. use command `docker compose up -d`
+2. create file `.env`
+3. copy file content from `envs/.env.example` and place it to `.env`
+4. use command `npm install -g yarn`
+5. use command `yarn`
+6. use command `yarn dev`
+7. use command `npx prisma migrate dev`
+8. use command `npx prisma generate`
+9. start docker deamon
+10. use command `docker compose up -d`
 
 
 ### Extension required

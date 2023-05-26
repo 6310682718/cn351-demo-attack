@@ -88,24 +88,35 @@ app.post("/login" ,async (req, res) => {
   }
 });
 
-app.get("/create-post", async (req, res) => {
+app.get("/create-post", middleware.isAuthenticated, async (req, res) => {
   res.render("create-post", {
     session: req.session,
     title: "create-post",
   });
 });
 
-app.post("/create-post", async (req, res) => {
-  console.log(req.body)
-  const user_id = 1;
-  const title = req.body.title
-  const description = req.body.editor1
-  const result = await connection.query("INSERT INTO posts (user_id, title, description) VALUES ($1, $2, $3) RETURNING *", [user_id, title, description,])
-  .catch(err => console.log(err))
-  res.render("create-post", {
-    session: req.session,
-    title: "create-post",
-  });
+app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
+  console.log(req.session.userId)
+  if (!req.session.userId) {
+    res.status(401).send("Unauthorized");
+    return;
+  }
+  const user_id = req.session.userId;
+  const title = req.body.title;
+  const description = req.body.editor1;
+  try {
+    const result = await connection.query(
+      "INSERT INTO posts (user_id, title, description) VALUES ($1, $2, $3) RETURNING *",
+      [user_id, title, description]
+    );
+    res.render("create-post", {
+      session: req.session,
+      title: "create-post",
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("An error occurred while creating the post");
+  }
 });
 
 // Start the server

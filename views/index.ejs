@@ -1,6 +1,6 @@
 <html>
   <body>
-    <% include('header.ejs') %>
+    <%- include('header.ejs') %>
     <div class="container mt-5">
       <h1 class="mt-5 text-center">All Posts</h1>
       <% if (posts.length === 0) { %>
@@ -8,9 +8,9 @@
       <% } else { %>
         <% for (let i = 0; i < posts.length; i++) { %>
           <div class="card mt-5">
-            <h5 class="card-header"><%= posts[i].title %></h5>
+            <h5 class="card-header"><%- posts[i].title %></h5>
             <div class="card-body">
-              <%= posts[i].description %>
+              <%- posts[i].description %>
             </div>
           </div>
         <% } %>

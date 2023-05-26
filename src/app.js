@@ -1,6 +1,7 @@
 // Import required modules
 import express from "express";
 // import mysql from "mysql";
+import crypto from 'crypto'
 
 import dotenv from "dotenv";
 import path from "path";
@@ -45,7 +46,7 @@ connection.connect((err) => {
 });
 
 // Define routes
-app.get("/", async (req, res) => {
+app.get("/",middleware.isAuthenticated, async (req, res) => {
   const result = await connection.query("SELECT * FROM posts");
   res.render("index", {
     posts: result.rows,
@@ -54,8 +55,37 @@ app.get("/", async (req, res) => {
   });
 });
 
+
 app.get("/login", async (req, res) => {
-  res.render("login", { title: "login", session: req.session });
+  res.render("login", { 
+    title: "login", 
+    session: req.session });
+});
+
+app.post("/login" ,async (req, res) => {
+  console.log(req.body)
+  const { email, password } = req.body;
+  try {
+    const result = await connection.query("SELECT * FROM users WHERE email = $1", [email])
+    const user = result.rows[0];
+    console.log(user)
+
+    if (user) {
+      const hashedPassword = crypto.createHash("md5").update(password).digest("hex");
+      console.log(hashedPassword)
+      console.log(user.password)
+      if (hashedPassword === user.password) {
+        // Login successful
+        req.session.authenticated = true;
+        req.session.userId = user.id;
+        res.redirect("/");
+        return;
+      }
+    }
+    res.render("login", { title: "login", session: req.session});
+  } catch (error) {
+    console.log("Error occurred during login:", error);
+  }
 });
 
 app.get("/create-post", async (req, res) => {
@@ -77,8 +107,6 @@ app.post("/create-post", async (req, res) => {
     title: "create-post",
   });
 });
-
-
 
 // Start the server
 app.listen(3000, () => {

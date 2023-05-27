@@ -55,6 +55,45 @@ app.get("/",middleware.isAuthenticated, async (req, res) => {
   });
 });
 
+app.get("/register", async (req, res) => {
+  res.render("register", { 
+    title: "register", 
+    session: req.session 
+  });
+});
+
+app.post("/register", async (req, res) => {
+  console.log(req.body);
+  const { name, email, password } = req.body;
+
+  try {
+    const result = await connection.query("SELECT * FROM users WHERE email = $1", [email]);
+    const user = result.rows[0];
+    console.log(user)
+    if (user) {
+      // User with the same email already exists
+      res.render("register", {
+        title: "register",
+        session: req.session,
+        error: "Email already registered",
+      });
+      return;
+    }
+
+    const hashedPassword = crypto.createHash("md5").update(password).digest("hex");
+    console.log(hashedPassword)
+
+    // Create a new user in the database
+
+    const getresult = await connection.query("INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", [name, email, hashedPassword]);
+    
+
+    // Registration successful
+    res.redirect("/login");
+  } catch (error) {
+    console.log("Error occurred during registration:", error);
+  }
+});
 
 app.get("/login", async (req, res) => {
   res.render("login", { 

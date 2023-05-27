@@ -1,7 +1,7 @@
 // Import required modules
 import express from "express";
 // import mysql from "mysql";
-import crypto from 'crypto'
+import crypto from "crypto";
 
 import dotenv from "dotenv";
 import path from "path";
@@ -46,7 +46,7 @@ connection.connect((err) => {
 });
 
 // Define routes
-app.get("/",middleware.isAuthenticated, async (req, res) => {
+app.get("/", middleware.isAuthenticated, async (req, res) => {
   const result = await connection.query("SELECT * FROM posts");
   res.render("index", {
     posts: result.rows,
@@ -56,9 +56,9 @@ app.get("/",middleware.isAuthenticated, async (req, res) => {
 });
 
 app.get("/register", async (req, res) => {
-  res.render("register", { 
-    title: "register", 
-    session: req.session 
+  res.render("register", {
+    title: "register",
+    session: req.session,
   });
 });
 
@@ -67,9 +67,12 @@ app.post("/register", async (req, res) => {
   const { name, email, password } = req.body;
 
   try {
-    const result = await connection.query("SELECT * FROM users WHERE email = $1", [email]);
+    const result = await connection.query(
+      "SELECT * FROM users WHERE email = $1",
+      [email]
+    );
     const user = result.rows[0];
-    console.log(user)
+    console.log(user);
     if (user) {
       // User with the same email already exists
       res.render("register", {
@@ -80,13 +83,19 @@ app.post("/register", async (req, res) => {
       return;
     }
 
-    const hashedPassword = crypto.createHash("md5").update(password).digest("hex");
-    console.log(hashedPassword)
+    // const hashedPassword = crypto
+    //   .createHash("md5")
+    //   .update(password)
+    //   .digest("hex");
+    const hashedPassword = password;
+    console.log(hashedPassword);
 
     // Create a new user in the database
 
-    const getresult = await connection.query("INSERT INTO users (name, email, password) VALUES ($1, $2, $3)", [name, email, hashedPassword]);
-    
+    const getresult = await connection.query(
+      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
+      [name, email, hashedPassword]
+    );
 
     // Registration successful
     res.redirect("/login");
@@ -96,32 +105,40 @@ app.post("/register", async (req, res) => {
 });
 
 app.get("/login", async (req, res) => {
-  res.render("login", { 
-    title: "login", 
-    session: req.session });
+  res.render("login", {
+    title: "login",
+    session: req.session,
+  });
 });
 
-app.post("/login" ,async (req, res) => {
-  console.log(req.body)
+app.post("/login", async (req, res) => {
+  console.log(req.body);
   const { email, password } = req.body;
   try {
-    const result = await connection.query("SELECT * FROM users WHERE email = $1", [email])
-    const user = result.rows[0];
-    console.log(user)
-
-    if (user) {
-      const hashedPassword = crypto.createHash("md5").update(password).digest("hex");
-      console.log(hashedPassword)
-      console.log(user.password)
-      if (hashedPassword === user.password) {
-        // Login successful
-        req.session.authenticated = true;
-        req.session.userId = user.id;
-        res.redirect("/");
-        return;
-      }
+    // const hashedPassword = crypto
+    //   .createHash("md5")
+    //   .update(password)
+    //   .digest("hex");
+    const hashedPassword = password;
+    const result = await connection.query(
+      `SELECT * FROM users WHERE password = '${hashedPassword}' AND email = '${email}'`
+    );
+    // console.log("🚀 ~ file: app.js:109 ~ app.post ~ result:", result);
+    const user = result.rows;
+    console.log("🚀 ~ file: app.js:127 ~ app.post ~ user:", user);
+    if (user.length == 1) {
+      req.session.authenticated = true;
+      req.session.userId = user.id;
+      res.redirect("/");
+      return;
     }
-    res.render("login", { title: "login", session: req.session});
+    // if (user) {
+    //   if (hashedPassword === user.password) {
+    //     // Login successful
+
+    //   }
+    // }
+    res.render("login", { title: "login", session: req.session });
   } catch (error) {
     console.log("Error occurred during login:", error);
   }
@@ -135,7 +152,7 @@ app.get("/create-post", middleware.isAuthenticated, async (req, res) => {
 });
 
 app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
-  console.log(req.session.userId)
+  console.log(req.session.userId);
   if (!req.session.userId) {
     res.status(401).send("Unauthorized");
     return;

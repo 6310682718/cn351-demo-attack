@@ -37,18 +37,25 @@
 
       if (response.ok) {
         Swal.fire({
-          icon: 'success',
-          title: 'Login successful',
-          showConfirmButton: false,
-          timer: 1500
+          title: "Success",
+          text: "Post created successfully!",
+          icon: "success",
+          button: {
+              text: "OK",
+              className: "btn btn-success" // Custom class for green button
+          }
         }).then(() => {
           window.location.href = "/"; // Redirect after success
         });
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Login failed',
+        swal({
+            title: "Error",
+            text: "An error occurred while creating the post.",
+            icon: "error",
+            button: {
+                text: "OK",
+                className: "btn btn-danger" // Custom class for red button
+            }
         });
       }
     } catch (error) {

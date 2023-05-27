@@ -112,7 +112,6 @@ app.get("/login", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  console.log(req.body);
   const { email, password } = req.body;
   try {
     // const hashedPassword = crypto
@@ -124,11 +123,12 @@ app.post("/login", async (req, res) => {
       `SELECT * FROM users WHERE password = '${hashedPassword}' AND email = '${email}'`
     );
     // console.log("🚀 ~ file: app.js:109 ~ app.post ~ result:", result);
-    const user = result.rows;
+    const user = result.rows[0];
     console.log("🚀 ~ file: app.js:127 ~ app.post ~ user:", user);
-    if (user.length == 1) {
+    if (user) {
       req.session.authenticated = true;
       req.session.userId = user.id;
+      req.session.username = user.name;
       res.redirect("/");
       return;
     }
@@ -152,7 +152,6 @@ app.get("/create-post", middleware.isAuthenticated, async (req, res) => {
 });
 
 app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
-  console.log(req.session.userId);
   if (!req.session.userId) {
     res.status(401).send("Unauthorized");
     return;
@@ -165,15 +164,15 @@ app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
       "INSERT INTO posts (user_id, title, description) VALUES ($1, $2, $3) RETURNING *",
       [user_id, title, description]
     );
-    res.render("create-post", {
-      session: req.session,
-      title: "create-post",
-    });
+    // Success response
+    res.json({ success: true });
   } catch (err) {
     console.log(err);
-    res.status(500).send("An error occurred while creating the post");
+    // Error response
+    res.json({ success: false, message: "An error occurred while creating the post" });
   }
 });
+
 
 // Start the server
 app.listen(3000, () => {

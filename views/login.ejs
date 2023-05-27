@@ -1,17 +1,63 @@
 <h1 class="text-center mt-4">LOGIN</h1>
-<form class="mt-4" method="POST" action="/login">
+<form class="mt-4" method="POST" action="/login" id="login-form">
   <div class="mb-3">
     <label for="exampleInputEmail1" class="form-label">Email address</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp">
+    <input type="email" class="form-control" id="exampleInputEmail1" name="email" aria-describedby="emailHelp" required>
     <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
   </div>
   <div class="mb-3">
     <label for="exampleInputPassword1" class="form-label">Password</label>
-    <input type="password" class="form-control" id="exampleInputPassword1" name="password">
+    <input type="password" class="form-control" id="exampleInputPassword1" name="password" required>
   </div>
   <div class="mb-3 form-check">
     <input type="checkbox" class="form-check-input" id="exampleCheck1">
     <label class="form-check-label" for="exampleCheck1">Check me out</label>
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
+  <a href="/register" class="btn btn-danger">Register</a>
 </form>
+
+<script>
+  const loginForm = document.getElementById("login-form");
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData(loginForm);
+    const email = formData.get("email");
+    const password = formData.get("password");
+
+    try {
+      const response = await fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Login successful',
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+          window.location.href = "/"; // Redirect after success
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Login failed',
+        });
+      }
+    } catch (error) {
+      console.error("Error occurred during login:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'An error occurred',
+      });
+    }
+  });
+</script>

@@ -2,30 +2,129 @@
 <html>
 <head>
   <title>Register</title>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 </head>
 <body>
-  <h1 class="text-center mt-4">Register</h1>
+  <h1 class="text-center mt-4">REGISTER</h1>
   
   <% if (typeof error !== 'undefined') { %>
     <p style="color: red;"><%= error %></p>
   <% } %>
   
-  <form action="/register" method="POST">
+  <form class="mt-4" action="/register" method="POST" id="register-form">
     <div class="mb-3">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" required>
-    <br><br>
+      <label for="name" class="form-label">Name:</label>
+      <input type="text" class="form-control" id="name" name="name" required>
+      <br><br>
+    </div>
 
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" required>
-    <br><br>
-    
-    <label for="password">Password:</label>
-    <input type="password" id="password" name="password" required>
-    <br><br>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email:</label>
+      <input type="email" class="form-control" id="email" name="email" aria-describedby="emailHelp" required>
+      <br><br>
     </div>
     
-    <button type="submit">Register</button>
+    <div class="mb-3">
+      <label for="password" class="form-label">Password:</label>
+      <input type="password" class="form-control" id="password" name="password" required>
+      <br><br>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Submit</button>
+    <a href="/login" class="btn btn-danger">Back to login</a>
+
   </form>
+
 </body>
 </html>
+
+
+<!-- Include SweetAlert JavaScript -->
+<script>
+  const registerForm = document.getElementById('register-form');
+  document.getElementById('register-form').addEventListener("submit", async function (event) {
+      event.preventDefault(); // Prevent form submission
+      
+      const formData = new FormData(registerForm);
+      const name = formData.get("name");
+      const email = formData.get("email");
+      const password = formData.get("password");
+      try {
+          // Perform AJAX request
+          const response = await fetch("/register", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name, email, password }),
+          });
+
+          if (response.ok) {
+              const data = await response.json();
+              if (data.success) {
+                  // Show success message
+                  swal("Success", "Register successfully!", "success")
+                      .then(() => {
+                          // Redirect to a new page or perform any additional action
+                          window.location.href = "/login"; // Redirect to home page
+                      });
+              } else {
+                  // Show error message
+                  swal("Error", "An error occurred while register.", "error");
+              }
+          } else {
+              throw new Error("Request failed with status: " + response.status);
+          }
+      } catch (error) {
+          console.error(error);
+          // Show error message
+          swal("Error", "An error occurred while register.", "error");
+      }
+  });
+</script>
+<!-- <script>
+  // Function to display success alert
+  function showSuccessAlert() {
+    Swal.fire({
+      icon: 'success',
+      title: 'Registration Successful',
+      text: 'You have been successfully registered!',
+    }).then(() => {
+      window.location.href = '/login'; // Redirect to the login page
+    });
+  }
+
+  // Function to display error alert
+  function showErrorAlert() {
+    Swal.fire({
+      icon: 'error',
+      title: 'Registration Failed',
+      text: 'An error occurred during registration. Please try again later.',
+    });
+  }
+
+  // Logic to handle the form submission and trigger the appropriate alert
+  document.getElementById('register-form').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent the form from submitting normally
+
+    // Get the form data
+    const formData = new FormData(event.target);
+
+    try {
+      // Perform the form submission using fetch or any other method
+      const response = await fetch('/register', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        showSuccessAlert(); // Display success alert if registration is successful
+      } else {
+        showErrorAlert(); // Display error alert if registration fails
+      }
+    } catch (error) {
+      console.error('An error occurred during form submission:', error);
+      showErrorAlert(); // Display error alert if an error occurs
+    }
+  });
+</script> -->

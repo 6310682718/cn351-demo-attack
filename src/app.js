@@ -72,7 +72,6 @@ app.post("/register", async (req, res) => {
       [email]
     );
     const user = result.rows[0];
-    console.log(user);
     if (user) {
       // User with the same email already exists
       res.render("register", {
@@ -80,7 +79,6 @@ app.post("/register", async (req, res) => {
         session: req.session,
         error: "Email already registered",
       });
-      return;
     }
 
     // const hashedPassword = crypto
@@ -98,9 +96,11 @@ app.post("/register", async (req, res) => {
     );
 
     // Registration successful
-    res.redirect("/login");
+    res.json({ success: true });
   } catch (error) {
     console.log("Error occurred during registration:", error);
+    res.json({ success: false, message: "An error occurred while registration" });
+
   }
 });
 

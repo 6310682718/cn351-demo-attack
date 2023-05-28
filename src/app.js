@@ -10,6 +10,7 @@ import middleware from "./middleware.js";
 import session from "express-session";
 // import { connection } from "./database";
 import { connection } from "./database.js";
+import e from "express";
 dotenv.config();
 const __dirname = new URL(".", import.meta.url).pathname;
 // Create an Express app
@@ -99,8 +100,10 @@ app.post("/register", async (req, res) => {
     res.json({ success: true });
   } catch (error) {
     console.log("Error occurred during registration:", error);
-    res.json({ success: false, message: "An error occurred while registration" });
-
+    res.json({
+      success: false,
+      message: "An error occurred while registration",
+    });
   }
 });
 
@@ -130,15 +133,10 @@ app.post("/login", async (req, res) => {
       req.session.userId = user.id;
       req.session.username = user.name;
       res.redirect("/");
-      return;
+      // res.redirect("/");
+    } else {
+      res.status(400).render("login", { title: "login", session: req.session });
     }
-    // if (user) {
-    //   if (hashedPassword === user.password) {
-    //     // Login successful
-
-    //   }
-    // }
-    res.render("login", { title: "login", session: req.session });
   } catch (error) {
     console.log("Error occurred during login:", error);
   }
@@ -169,10 +167,12 @@ app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
   } catch (err) {
     console.log(err);
     // Error response
-    res.json({ success: false, message: "An error occurred while creating the post" });
+    res.json({
+      success: false,
+      message: "An error occurred while creating the post",
+    });
   }
 });
-
 
 // Start the server
 app.listen(3000, () => {

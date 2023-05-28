@@ -39,7 +39,6 @@
 </html>
 
 
-<!-- Include SweetAlert JavaScript -->
 <script>
   const registerForm = document.getElementById('register-form');
   document.getElementById('register-form').addEventListener("submit", async function (event) {
@@ -82,49 +81,3 @@
       }
   });
 </script>
-<!-- <script>
-  // Function to display success alert
-  function showSuccessAlert() {
-    Swal.fire({
-      icon: 'success',
-      title: 'Registration Successful',
-      text: 'You have been successfully registered!',
-    }).then(() => {
-      window.location.href = '/login'; // Redirect to the login page
-    });
-  }
-
-  // Function to display error alert
-  function showErrorAlert() {
-    Swal.fire({
-      icon: 'error',
-      title: 'Registration Failed',
-      text: 'An error occurred during registration. Please try again later.',
-    });
-  }
-
-  // Logic to handle the form submission and trigger the appropriate alert
-  document.getElementById('register-form').addEventListener('submit', async function (event) {
-    event.preventDefault(); // Prevent the form from submitting normally
-
-    // Get the form data
-    const formData = new FormData(event.target);
-
-    try {
-      // Perform the form submission using fetch or any other method
-      const response = await fetch('/register', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        showSuccessAlert(); // Display success alert if registration is successful
-      } else {
-        showErrorAlert(); // Display error alert if registration fails
-      }
-    } catch (error) {
-      console.error('An error occurred during form submission:', error);
-      showErrorAlert(); // Display error alert if an error occurs
-    }
-  });
-</script> -->

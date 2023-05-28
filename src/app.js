@@ -132,10 +132,11 @@ app.post("/login", async (req, res) => {
       req.session.authenticated = true;
       req.session.userId = user.id;
       req.session.username = user.name;
+      res.status(200).json({ message: "Login successful" });
       res.redirect("/");
-      // res.redirect("/");
     } else {
-      res.status(400).render("login", { title: "login", session: req.session });
+      res.status(400).send("Authenticate failed");
+      // res.status(400).render("login", { title: "login", session: req.session });
     }
   } catch (error) {
     console.log("Error occurred during login:", error);

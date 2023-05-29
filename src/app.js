@@ -10,6 +10,7 @@ import middleware from "./middleware.js";
 import session from "express-session";
 // import { connection } from "./database";
 import { connection } from "./database.js";
+import e from "express";
 dotenv.config();
 const __dirname = new URL(".", import.meta.url).pathname;
 // Create an Express app
@@ -72,7 +73,6 @@ app.post("/register", async (req, res) => {
       [email]
     );
     const user = result.rows[0];
-    console.log(user);
     if (user) {
       // User with the same email already exists
       res.render("register", {
@@ -80,7 +80,6 @@ app.post("/register", async (req, res) => {
         session: req.session,
         error: "Email already registered",
       });
-      return;
     }
 
     // const hashedPassword = crypto
@@ -98,9 +97,13 @@ app.post("/register", async (req, res) => {
     );
 
     // Registration successful
-    res.redirect("/login");
+    res.json({ success: true });
   } catch (error) {
     console.log("Error occurred during registration:", error);
+    res.json({
+      success: false,
+      message: "An error occurred while registration",
+    });
   }
 });
 
@@ -129,16 +132,12 @@ app.post("/login", async (req, res) => {
       req.session.authenticated = true;
       req.session.userId = user.id;
       req.session.username = user.name;
+      res.status(200).json({ message: "Login successful" });
       res.redirect("/");
-      return;
+    } else {
+      res.status(400).send("Authenticate failed");
+      // res.status(400).render("login", { title: "login", session: req.session });
     }
-    // if (user) {
-    //   if (hashedPassword === user.password) {
-    //     // Login successful
-
-    //   }
-    // }
-    res.render("login", { title: "login", session: req.session });
   } catch (error) {
     console.log("Error occurred during login:", error);
   }
@@ -171,7 +170,6 @@ app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
     res.status(500).send("An error occurred while creating the post");
   }
 });
-
 
 // Start the server
 app.listen(3000, () => {

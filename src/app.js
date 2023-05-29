@@ -152,6 +152,7 @@ app.get("/create-post", middleware.isAuthenticated, async (req, res) => {
 });
 
 app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
+  console.log(req.session.userId)
   if (!req.session.userId) {
     res.status(401).send("Unauthorized");
     return;
@@ -164,12 +165,10 @@ app.post("/create-post", middleware.isAuthenticated, async (req, res) => {
       "INSERT INTO posts (user_id, title, description) VALUES ($1, $2, $3) RETURNING *",
       [user_id, title, description]
     );
-    // Success response
-    res.json({ success: true });
+    res.redirect("/");
   } catch (err) {
     console.log(err);
-    // Error response
-    res.json({ success: false, message: "An error occurred while creating the post" });
+    res.status(500).send("An error occurred while creating the post");
   }
 });
 

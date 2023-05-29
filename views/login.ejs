@@ -55,13 +55,13 @@
           window.location.href = "/"; // Redirect after success
         });
       } else {
-        swal({
-          title: "Error",
-          text: "Authentication failed",
+        Swal.fire({
+          title: "Failed",
+          text: "Authenticate Failed",
           icon: "error",
           button: {
             text: "OK",
-            className: "btn btn-danger" // Custom class for red button
+            className: "btn btn-secondary" // Custom class for green button
           }
         });
       }

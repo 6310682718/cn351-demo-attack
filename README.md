@@ -4,7 +4,7 @@
 ```
 1. Pongsakorn Parsoppornpiboon 6310682718
 2. Thanapat Pongpipat 6310682734
-3. ....
+3. Ploynapat Bunsena 6310610966
 4. Woraphat Wannaphong 6310611055
 ```
 
